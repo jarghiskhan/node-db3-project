@@ -152,6 +152,13 @@ function findSteps(scheme_id) {
     .select("st.step_id","st.step_number","st.instructions","sc.scheme_name")
     .where("sc.scheme_id",`${scheme_id}`)
     .orderBy("st.step_number")
+    .then((array)=>{
+      console.log(array[0].instructions)
+      if(!array[0].step_id){
+        return []
+      }
+      return array
+    })
     
 }
 
