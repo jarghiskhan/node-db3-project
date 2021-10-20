@@ -153,7 +153,6 @@ function findSteps(scheme_id) {
     .where("sc.scheme_id",`${scheme_id}`)
     .orderBy("st.step_number")
     .then((array)=>{
-      console.log(array[0].instructions)
       if(!array[0].step_id){
         return []
       }
@@ -180,8 +179,10 @@ function addStep(scheme_id, step) {
     including the newly created one.
   */
   return db("steps")
-  .insert({scheme_id: scheme_id},step)
-  .then(([id])=>findById(id))
+  .insert({"scheme_id":scheme_id, "instructions":step.instructions, "step_number": step.step_number})
+  .then(()=>{
+    return findSteps(scheme_id)
+  })
 }
 
 module.exports = {

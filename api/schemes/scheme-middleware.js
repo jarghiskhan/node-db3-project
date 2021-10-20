@@ -29,7 +29,7 @@ const checkSchemeId = (req, res, next) => {
 const validateScheme = (req, res, next) => {
   const { scheme_name } = req.body;
     
-  if(scheme_name === undefined || scheme_name.length === 0 ||  typeof scheme_name !== "string"){
+  if(!scheme_name || scheme_name.length === 0 ||  typeof scheme_name !== "string"){
     res.status(400).json({ message: "invalid scheme_name" });
   }
   else {
@@ -48,7 +48,7 @@ const validateScheme = (req, res, next) => {
 */
 const validateStep = (req, res, next) => {
   const { instructions, step_number} = req.body;
-  if(instructions === undefined || typeof instructions !== "string" || step_number < 1 || typeof step_number){
+  if(!instructions || typeof instructions !== "string" || step_number < 1 || typeof step_number !== "number"){
     res.status(400).json({message:"invalid step"})
   }
   next();
