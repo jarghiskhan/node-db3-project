@@ -8,12 +8,11 @@ const Schemes = require("../schemes/scheme-model")
   }
 */
 const checkSchemeId = (req, res, next) => {
-  const {id} = req.params;
-  Schemes.findById(id).then((scheme)=>{
-    if(!scheme){
-      res.status(404).json({message: `scheme with scheme_id ${id} not found`})
+  const {scheme_id} = req.params;
+  Schemes.findById(scheme_id).then((scheme)=>{
+    if(!scheme || Object.keys(scheme).length === 0){
+      res.status(404).json({message: `scheme with scheme_id ${scheme_id} not found`})
     } else{
-      req.scheme = scheme;
       next();
     }
   })
@@ -48,7 +47,11 @@ const validateScheme = (req, res, next) => {
   }
 */
 const validateStep = (req, res, next) => {
-  
+  const { instructions, step_number} = req.body;
+  if(instructions === undefined || instructions.length === 0 || typeof instructions !== "string" || step_number < 1 || typeof step_number){
+    res.status(400).json({message:"invalid "})
+  }
+  next();
 }
 
 module.exports = {

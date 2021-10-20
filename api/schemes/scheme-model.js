@@ -94,11 +94,35 @@ function findById(scheme_id) {
         "steps": []
       }
   */
-  return db("schemes as sc")
+
+const results = db("schemes as sc")
     .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
     .select("sc.scheme_name","st.*")
-    .where(`sc.scheme_id`, `${scheme_id}`)
+    .where(`sc.scheme_id`, scheme_id)
     .orderBy("st.step_number")  
+    .then((array)=>{
+      if(!array[0]){
+        return []
+      }
+      const newObject = {
+        "scheme_id":Number(scheme_id),
+        "scheme_name":array[0].scheme_name,
+        "steps": []
+      }
+      array.forEach((element)=>{
+        
+       if (element.step_id){
+         newObject.steps.push({
+          "step_id":element.step_id,
+          "step_number":element.step_number,
+          "instructions":element.instructions
+         })
+       }
+      })
+      return newObject
+    })
+
+return results;
 }
 
 function findSteps(scheme_id) {
@@ -128,6 +152,7 @@ function findSteps(scheme_id) {
     .select("st.step_id","st.step_number","st.instructions","sc.scheme_name")
     .where("sc.scheme_id",`${scheme_id}`)
     .orderBy("st.step_number")
+    
 }
 
 function add(scheme) {
@@ -137,9 +162,7 @@ function add(scheme) {
   */
     return db("schemes")
     .insert(scheme)
-    .then((ids) => {
-      return findById(ids[0]);
-    });
+    .then(([id]) => findById(id));
 }
 
 function addStep(scheme_id, step) {
@@ -149,7 +172,9 @@ function addStep(scheme_id, step) {
     and resolves to _all the steps_ belonging to the given `scheme_id`,
     including the newly created one.
   */
-
+  return db("steps")
+  .insert({scheme_id: scheme_id},step)
+  .then(([id])=>findById(id))
 }
 
 module.exports = {
